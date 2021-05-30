@@ -12,7 +12,7 @@ const kMessageTextStyle = TextStyle(
 );
 const kCityTextStyle = TextStyle(
   fontFamily: 'ProductSans',
-  fontSize: 40.0,
+  fontSize: 30.0,
 );
 const kDetailStyle = TextStyle(
   fontFamily: 'ProductSans',
@@ -35,24 +35,20 @@ const kConditionTextStyle = TextStyle(
 );
 
 const kTextFieldInputDecoration = InputDecoration(
-
-
+  contentPadding: EdgeInsets.all(0),
   filled: true,
-  fillColor: Colors.white,
-  icon: Icon(
-    Icons.search,
-    color: Colors.white,
+  fillColor: Colors.grey,
 
-  ),
-  hintText: 'Enter City Name',
+  hintText: 'Search ',
   hintStyle: TextStyle(
-    color: Colors.grey,
-    fontSize: 20
+
+    color: Colors.white,
+    fontSize: 25
   ),
   labelStyle: TextStyle(fontSize: 20),
   border: OutlineInputBorder(
     borderRadius: BorderRadius.all(
-      Radius.circular(10.0),
+      Radius.circular(30.0),
     ),
     borderSide: BorderSide.none,
   ),

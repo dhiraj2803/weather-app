@@ -49,6 +49,18 @@ class WeatherModel {
     var weatherData = await networkHelper.getData();
     return weatherData;
   }
+
+  Future<dynamic> getLocationWeather2() async{
+    Location location = Location();
+    await location.getCurrentLocation();
+    NetworkHelper networkHelper = NetworkHelper(
+        'https://api.openweathermap.org/data/2.5/onecall?lat=${location.latitude}&lon=${location.longitude}&exclude=minutely,daily,alerts&appid=$APIkey&units=metric');
+    var weatherData2 = await networkHelper.getData();
+    return weatherData2;
+  }
+
+
+
   String getWeatherIcon(String icon_code) {
     if(icon_code == '01d'||icon_code == '01n') {
       return 'Clear sky';
@@ -94,16 +106,6 @@ class WeatherModel {
   }
 
 
-  String getMessage(int temp) {
-    if (temp > 25) {
-      return 'It\'s 🍦 time';
-    } else if (temp > 20) {
-      return 'Time for shorts and 👕';
-    } else if (temp < 10) {
-      return 'You\'ll need 🧣 and 🧤';
-    } else {
-      return 'Bring a 🧥 just in case';
-    }
-  }
+
 
 }

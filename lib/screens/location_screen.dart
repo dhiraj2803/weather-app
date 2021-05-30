@@ -1,8 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:weather_live/utilities/constants.dart';
 import 'package:weather_live/services/weather.dart';
-import 'package:weather_live/screens/city_screen.dart';
 
 import 'loading_screen.dart';
 
@@ -16,9 +17,9 @@ class LocationScreen extends StatefulWidget {
 
 class _LocationScreenState extends State<LocationScreen> {
   WeatherModel weather = WeatherModel();
-
+  String SearchCity;
   String bgPath;
-
+  String chk;
   String temp_msg;
   int temp;
   String cityName;
@@ -29,6 +30,7 @@ class _LocationScreenState extends State<LocationScreen> {
   double wind;
   double visbility;
   double aqi;
+  int weatherdate;
   @override
   void initState() {
   //  print(widget.locationweather);
@@ -45,16 +47,16 @@ class _LocationScreenState extends State<LocationScreen> {
         weatherCondition= 'Not Found';
         humidity =0;
         pressure =0;
-        wind = 0;
+        wind = 0.0;
         visbility =0;
         bgPath= 'images/background/default.jpg';
-        aqi = 0;
+        aqi = 0.0;
         return;
       }
 
       double temprature = weatherdata['main']['temp'];
       temp = temprature.toInt();
-      temp_msg = weather.getMessage(temp);
+      // temp_msg = weather.getMessage(temp);
 
       cityName = weatherdata['name'];
 
@@ -66,11 +68,13 @@ class _LocationScreenState extends State<LocationScreen> {
       humidity = weatherdata['main']['humidity'];
       pressure = weatherdata['main']['pressure'];
       wind = weatherdata['wind']['speed'];
+
       var visbility_meter = weatherdata['visibility'];
       visbility = visbility_meter/1000 ;
 
       aqi = aqidata['list'][0]['components']['pm2_5'];
       bgPath = weather.getBgPath(weathericon);
+      weatherdate = weatherdata['dt'];
 
       // weatherCondition= weather.getWeatherIcon(weathericon);
   });
@@ -79,168 +83,191 @@ class _LocationScreenState extends State<LocationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size;
+    var width = screenSize.width;
+    var height = screenSize.height;
+
     return Scaffold(
-      body: Container(
-        padding: EdgeInsets.symmetric(vertical: 15,horizontal: 5),
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(bgPath),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-                Colors.white.withOpacity(0.8), BlendMode.dstATop),
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          title: TextField(
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 30,
+
+              color: Colors.black,
+
+            ),
+            decoration: kTextFieldInputDecoration,
+            onChanged: (value) {
+              SearchCity = value;
+            },
           ),
-        ),
-        constraints: BoxConstraints.expand(),
-        child: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //crossAxisAlignment: CrossAxisAlignment.stretch,
-
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      //LoadingScreen()
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return LoadingScreen();
-                          },
-                        ),
-                      );
-                    },
-                    // async{
-                    //   var weatherdata = await weather.getLocationWeather();
-                    //   var aqidata = await weather.getLocationAQI();
-                    //   updateUI(weatherdata,aqidata);
-                    // },
-                    child: Icon(
-                      Icons.near_me,
-                      size: 40.0,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text('$cityName',style: kCityTextStyle,),
-                  TextButton(
-                    onPressed: () async{
-                      var typedName = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return CityScreen();
-                          },
-                        ),
-                      );
-                    if (typedName != null) {
-                      var weatherdata = await weather.getCityWeather(typedName);
-                      var aqidata = await weather.getCityAQI(typedName);
-                      updateUI(weatherdata,aqidata);
-                    }
-                    },
-                    child: Icon(
-                      Icons.search,
-                      size: 40.0,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            onPressed: () {
+              //LoadingScreen()
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return LoadingScreen();
+                  },
+                ),
+              );
+            },
+            icon: Icon(
+              Icons.location_on_sharp,
+              size: 30,
+              color: Colors.white,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async{
+                if (SearchCity != null) {
+                  var weatherdata = await weather.getCityWeather(SearchCity);
+                  var aqidata = await weather.getCityAQI(SearchCity);
+                  updateUI(weatherdata,aqidata);
+                }
+              },
+              child: Icon(
+                Icons.search,
+                size: 40.0,
+                color: Colors.white,
               ),
-              Container(
-                padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
+            )
+          ],
+        ),
+      body:Stack(
+        children: [
+          Image.asset(bgPath,fit: BoxFit.cover,height: double.infinity,width: double.infinity,),
 
-                    Row(
-                      children: [
-                        Container(
-                          child: SvgPicture.asset(
-                            'images/weather_icon/$weatherIcon.svg',
-                            color: Colors.white,
-                            width: 60,
+          ListView(
+            children: [
+            Container(
+            height: height - (height/9),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 30, 0, 0),
+                  child: Text('$cityName',style: kCityTextStyle,textAlign: TextAlign.left,),
+                ),
+
+                Container(
+                  padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+
+                      Row(
+                        children: [
+                          Container(
+                            child: SvgPicture.asset(
+                              'images/weather_icon/$weatherIcon.svg',
+                              color: Colors.white,
+                              width: 60,
+                            ),
+                            // Image(image:
+                            //
+                            // // AssetImage('images/weather_icon/$weatherIcon.png',),
+                            //   height: 80,width: 80,),
                           ),
-                          // Image(image:
-                          //
-                          // // AssetImage('images/weather_icon/$weatherIcon.png',),
-                          //   height: 80,width: 80,),
-                        ),
-                        SizedBox(width: 20,),
-                        Text(weatherCondition,
-                          style: kWeatherTextStyle,
-                        ),
-                      ],
-                    ),
-                    Text(
-                      '$temp°c',
-                      style: kTempTextStyle,
-                    ),
-                  ],
+                          SizedBox(width: 20,),
+                          Text(weatherCondition,
+                            style: kWeatherTextStyle,
+                          ),
+                        ],
+                      ),
+                      Text(
+                        '$temp°c',
+                        style: kTempTextStyle,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
 
-                    Text('Details',style: kDetailStyle,),
-                    SizedBox(height: 20,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        weatherDetailCard(
-                          image: 'images/humidity.png',
-                          detailName: 'Humidity',
-                          detailInfo: '$humidity%',
-                        ),
-                        SizedBox(width: 10,),
-                        weatherDetailCard(
-                          image: 'images/pressure-indicator.png',
-                          detailName: 'Pressure',
-                          detailInfo: '$pressure mbar',
-                        ),
-                        SizedBox(width: 10,),
-                        weatherDetailCard(
-                          image: 'images/air-quality.png',
-                          detailName: 'AQI (PM 2.5)',
-                          detailInfo: '$aqi',
-                        ),
-                    ],),
-                    SizedBox(height: 15,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        weatherDetailCard(
-                          image: 'images/wind.png',
-                          detailName: 'Wind',
-                          detailInfo: '$wind Km/h',
-                        ),
-                        SizedBox(width: 10,),
-                        weatherDetailCard(
-                          image: 'images/witness.png',
-                          detailName: 'Visibility',
-                          detailInfo: '$visbility Km',
-                        ),
-                    ],)
-                  ],
+                Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+
+                      Text('Details',style: kDetailStyle,),
+                      SizedBox(height: 20,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          weatherDetailCard(
+                            image: 'images/humidity.png',
+                            detailName: 'Humidity',
+                            detailInfo: '$humidity%',
+                          ),
+                          SizedBox(width: 10,),
+                          weatherDetailCard(
+                            image: 'images/pressure-indicator.png',
+                            detailName: 'Pressure',
+                            detailInfo: '$pressure mbar',
+                          ),
+                          SizedBox(width: 10,),
+                          weatherDetailCard(
+                            image: 'images/air-quality.png',
+                            detailName: 'AQI (PM 2.5)',
+                            detailInfo: '$aqi',
+                          ),
+                        ],),
+                      SizedBox(height: 15,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          weatherDetailCard(
+                            image: 'images/wind.png',
+                            detailName: 'Wind',
+                            detailInfo: '$wind Km/h',
+                          ),
+                          SizedBox(width: 10,),
+                          weatherDetailCard(
+                            image: 'images/witness.png',
+                            detailName: 'Visibility',
+                            detailInfo: '$visbility Km',
+                          ),
+                        ],)
+                    ],
+                  ),
                 ),
-              )
+              ],
+            ),
+            ),
+            SizedBox(height: 15,),
+            Container(
+            child: Text('Hourly Forcast',style: TextStyle( fontSize: 25),textAlign: TextAlign.center,),
+            ),
+            Container(
+            child: hourlyForecast(
+              temprature: '30',
+              image:
+                'images/weather_icon/01d.svg',
+              time: '1:00',
+            ),
+            ),
+
             ],
-          ),
-        ),
-      ),
+            )
+        ],
+      )
     );
   }
 }
 class weatherDetailCard extends StatelessWidget {
   weatherDetailCard({this.image ,this.detailName , this.detailInfo });
-   String image;
-   String detailName;
-   String detailInfo;
+  String image;
+  String detailName;
+  String detailInfo;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -257,6 +284,7 @@ class weatherDetailCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+
           Image(image: AssetImage(image),height: 40,width: 40,),
           Text(detailName,textAlign: TextAlign.center,),
           Text(detailInfo,textAlign: TextAlign.center,),
@@ -265,6 +293,48 @@ class weatherDetailCard extends StatelessWidget {
     );
   }
 }
+
+class hourlyForecast extends StatelessWidget {
+  hourlyForecast({this.time ,this.image , this.temprature });
+  String image;
+  String time;
+  String temprature;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(7),
+      decoration: BoxDecoration(
+          color: Color(	0xff888888).withOpacity(0.2),
+          borderRadius: BorderRadius.all(Radius.circular(10))
+      ),
+      height: 100,
+      width: 50,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(time,textAlign: TextAlign.center,),
+          SvgPicture.asset(
+            image,
+            color: Colors.white,
+            width: 30,
+          ),
+          Text(temprature,textAlign: TextAlign.center,),
+        ],
+      ) ,
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
