@@ -1,18 +1,22 @@
-import 'package:weather_live/services/networking.dart';
 import 'package:weather_live/services/location.dart';
-const APIkey = 'ae07d0de632aa06e3c1c0f20f23285e9';
-class WeatherModel {
+import 'package:weather_live/services/networking.dart';
 
-  Future<dynamic> getCityWeather(String cityName) async{
-    var url = 'https://api.openweathermap.org/data/2.5/weather?q=$cityName&appid=$APIkey&units=metric';
+const APIkey = 'ae07d0de632aa06e3c1c0f20f23285e9';
+
+class WeatherModel {
+  Future<dynamic> getCityWeather(String cityName) async {
+    var url =
+        'https://api.openweathermap.org/data/2.5/weather?q=$cityName&appid=$APIkey&units=metric';
     NetworkHelper networkHelper = NetworkHelper(url);
     var weatherData = await networkHelper.getData();
     return weatherData;
   }
-  Future<dynamic> getCityAQI(String cityName) async{
+
+  Future<dynamic> getCityAQI(String cityName) async {
     // double latitude;
     // double longitude;
-    var url = 'https://api.openweathermap.org/data/2.5/weather?q=$cityName&appid=$APIkey&units=metric';
+    var url =
+        'https://api.openweathermap.org/data/2.5/weather?q=$cityName&appid=$APIkey&units=metric';
     NetworkHelper networkHelper = NetworkHelper(url);
     var weatherData = await networkHelper.getData();
     if (weatherData != null) {
@@ -23,17 +27,17 @@ class WeatherModel {
           'http://api.openweathermap.org/data/2.5/air_pollution?lat=$Lat&lon=$Lon&appid=$APIkey');
       var aqiData = await networkHelperaqi.getData();
       return aqiData;
-    }
-    else{
+    } else {
       return null;
     }
     //return weatherData;
   }
 
-  Future<dynamic> getCityWeatherDaily(String cityName) async{
+  Future<dynamic> getCityWeatherDaily(String cityName) async {
     // double latitude;
     // double longitude;
-    var url = 'https://api.openweathermap.org/data/2.5/weather?q=$cityName&appid=$APIkey&units=metric';
+    var url =
+        'https://api.openweathermap.org/data/2.5/weather?q=$cityName&appid=$APIkey&units=metric';
     NetworkHelper networkHelper = NetworkHelper(url);
     var weatherData = await networkHelper.getData();
     if (weatherData != null) {
@@ -44,16 +48,13 @@ class WeatherModel {
           'https://api.openweathermap.org/data/2.5/onecall?lat=$Lat&lon=$Lon&exclude=minutely,hourly,alerts&appid=$APIkey&units=metric');
       var weatherDataDaily = await networkHelperforecast.getData();
       return weatherDataDaily;
-    }
-    else{
+    } else {
       return null;
     }
     //return weatherData;
   }
 
-
-
-  Future<dynamic> getLocationWeather() async{
+  Future<dynamic> getLocationWeather() async {
     Location location = Location();
     await location.getCurrentLocation();
     NetworkHelper networkHelper = NetworkHelper(
@@ -62,7 +63,7 @@ class WeatherModel {
     return weatherData;
   }
 
-  Future<dynamic> getLocationAQI() async{
+  Future<dynamic> getLocationAQI() async {
     Location location = Location();
     await location.getCurrentLocation();
     NetworkHelperaqi networkHelperaqi = NetworkHelperaqi(
@@ -72,7 +73,8 @@ class WeatherModel {
     //print(aqiData);
     //http://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API key}
   }
-  Future<dynamic> getLocationWeatherDaily() async{
+
+  Future<dynamic> getLocationWeatherDaily() async {
     Location location = Location();
     await location.getCurrentLocation();
     NetworkHelperforecast networkHelperforecast = NetworkHelperforecast(
@@ -81,38 +83,36 @@ class WeatherModel {
     return weatherDataDaily;
   }
 
-
-
   String getWeatherIcon(String icon_code) {
-    if(icon_code == '01d'||icon_code == '01n') {
+    if (icon_code == '01d' || icon_code == '01n') {
       return 'Clear sky';
-    }else if(icon_code == '02d'||icon_code == '02n') {
+    } else if (icon_code == '02d' || icon_code == '02n') {
       return 'Few clouds';
-    }else if(icon_code == '03d'|| icon_code == '03n') {
+    } else if (icon_code == '03d' || icon_code == '03n') {
       return 'Scattered clouds';
-    }else if(icon_code == '04d'|| icon_code == '04n') {
+    } else if (icon_code == '04d' || icon_code == '04n') {
       return 'Broken clouds';
-    }else if(icon_code == '09d'|| icon_code == '09n') {
+    } else if (icon_code == '09d' || icon_code == '09n') {
       return 'Shower rain';
-    }else if(icon_code == '10d'|| icon_code == '10n') {
+    } else if (icon_code == '10d' || icon_code == '10n') {
       return 'Rain';
-    }else if(icon_code == '11d'|| icon_code == '11n') {
+    } else if (icon_code == '11d' || icon_code == '11n') {
       return 'Thunderstorm';
-    }else if(icon_code == '13d'|| icon_code == '13n') {
+    } else if (icon_code == '13d' || icon_code == '13n') {
       return 'Snow';
-    }else if(icon_code == '50d'|| icon_code == '50n') {
+    } else if (icon_code == '50d' || icon_code == '50n') {
       return 'Mist';
     }
   }
 
-  String getBgPath (String icon_code) {
+  String getBgPath(String icon_code) {
     if (icon_code == '01d') {
       return 'images/background/clear_day.jpg';
     } else if (icon_code == '01n') {
       return 'images/background/clear_night.jpg';
-    } else if (icon_code == '02d' ||icon_code == '03d' || icon_code == '04d') {
+    } else if (icon_code == '02d' || icon_code == '03d' || icon_code == '04d') {
       return 'images/background/Clouds_day.jpg';
-    } else if (icon_code == '02n' ||icon_code == '03n' || icon_code == '04n') {
+    } else if (icon_code == '02n' || icon_code == '03n' || icon_code == '04n') {
       return 'images/background/Clouds_night.jpg';
     } else if (icon_code == '09d' || icon_code == '09n') {
       return 'images/background/Drizzle.jpg';
@@ -126,8 +126,4 @@ class WeatherModel {
       return 'images/background/default.jpg';
     }
   }
-
-
-
-
 }

@@ -1,11 +1,14 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class NetworkHelper{
+import 'package:http/http.dart' as http;
+
+class NetworkHelper {
   NetworkHelper(this.url);
+
   final String url;
-  Future getData() async{
-    http.Response response = await http.get( Uri.parse(url));
+
+  Future getData() async {
+    http.Response response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       String data = response.body;
       print(data);
@@ -18,11 +21,13 @@ class NetworkHelper{
   }
 }
 
-class NetworkHelperaqi{
+class NetworkHelperaqi {
   NetworkHelperaqi(this.url);
+
   final String url;
-  Future getData() async{
-    http.Response response = await http.get( Uri.parse(url));
+
+  Future getData() async {
+    http.Response response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       String data = response.body;
       print(data);
@@ -36,11 +41,13 @@ class NetworkHelperaqi{
   }
 }
 
-class NetworkHelperforecast{
+class NetworkHelperforecast {
   NetworkHelperforecast(this.url);
+
   final String url;
-  Future getData() async{
-    http.Response response = await http.get( Uri.parse(url));
+
+  Future getData() async {
+    http.Response response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       String data = response.body;
       print(data);

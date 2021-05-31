@@ -18,10 +18,9 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   void getLocationdata() async {
-
-   var weatherData = await WeatherModel().getLocationWeather();
-   var aqiData = await WeatherModel().getLocationAQI();
-   var weatherForecast = await WeatherModel().getLocationWeatherDaily();
+    var weatherData = await WeatherModel().getLocationWeather();
+    var aqiData = await WeatherModel().getLocationAQI();
+    var weatherForecast = await WeatherModel().getLocationWeatherDaily();
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return LocationScreen(
         locationweather: weatherData,
@@ -37,7 +36,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
   // Build
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Container(
         child: Column(
@@ -49,8 +47,13 @@ class _LoadingScreenState extends State<LoadingScreen> {
               size: 50.0,
               duration: Duration(seconds: 2),
             ),
-            SizedBox(height: 20,),
-            Text('Getting weather',style: kButtonTextStyle,),
+            SizedBox(
+              height: 20,
+            ),
+            Text(
+              'Getting weather',
+              style: kButtonTextStyle,
+            ),
           ],
         ),
       ),
