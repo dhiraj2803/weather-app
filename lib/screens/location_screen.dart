@@ -4,19 +4,23 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:weather_live/utilities/constants.dart';
 import 'package:weather_live/services/weather.dart';
-
+import 'package:http/http.dart' as http;
 import 'loading_screen.dart';
+import 'dart:convert';
 
 class LocationScreen extends StatefulWidget {
-  LocationScreen({this.locationweather,this.aqidata});
+  LocationScreen({this.locationweather,this.aqidata,this.dailyweather});
   final locationweather;
   final aqidata;
+  final dailyweather;
   @override
   _LocationScreenState createState() => _LocationScreenState();
 }
 
 class _LocationScreenState extends State<LocationScreen> {
+
   WeatherModel weather = WeatherModel();
+//current weather variable
   String SearchCity;
   String bgPath;
   String chk;
@@ -27,33 +31,71 @@ class _LocationScreenState extends State<LocationScreen> {
   String weatherCondition;
   int humidity;
   int pressure;
-  double wind;
+  var wind;
   double visbility;
   double aqi;
   int weatherdate;
+// Daily weather variable
+  //day
+  String day1;
+  String day2;
+  String day3;
+  String day4;
+  String day5;
+  //weather icon
+  String dWeatherIcon1;
+  String dWeatherIcon2;
+  String dWeatherIcon3;
+  String dWeatherIcon4;
+  String dWeatherIcon5;
+  //minimum temprature
+  String dMinTemp1;
+  String dMinTemp2;
+  String dMinTemp3;
+  String dMinTemp4;
+  String dMinTemp5;
+  //maximum temprature
+  String dMaxTemp1;
+  String dMaxTemp2;
+  String dMaxTemp3;
+  String dMaxTemp4;
+  String dMaxTemp5;
+
+
+
+
   @override
   void initState() {
   //  print(widget.locationweather);
     super.initState();
-    updateUI(widget.locationweather,widget.aqidata);
+    updateUI(widget.locationweather,widget.aqidata,widget.dailyweather);
   }
-  void updateUI(dynamic weatherdata , dynamic aqidata ){
+  void updateUI(dynamic weatherdata , dynamic aqidata ,dynamic dailyweather ){
     setState(() {
       if(weatherdata == null && aqidata == null){
-        temp = 0;
-        temp_msg = 'No message';
-        cityName = 'Error';
-        weatherIcon='Error';
-        weatherCondition= 'Not Found';
-        humidity =0;
-        pressure =0;
-        wind = 0.0;
-        visbility =0;
-        bgPath= 'images/background/default.jpg';
-        aqi = 0.0;
-        return;
-      }
 
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return LoadingScreen();
+            },
+          ),
+        );
+        // temp = 0;
+        // temp_msg = 'No message';
+        // cityName = 'Error';
+        // weatherIcon='Error';
+        // weatherCondition= 'Not Found';
+        // humidity =0;
+        // pressure =0;
+        // wind = 0.0;
+        // visbility =0;
+        // bgPath= 'images/background/default.jpg';
+        // aqi = 0.0;
+        // return;
+      }
+      // current weather data
       double temprature = weatherdata['main']['temp'];
       temp = temprature.toInt();
       // temp_msg = weather.getMessage(temp);
@@ -67,16 +109,63 @@ class _LocationScreenState extends State<LocationScreen> {
 
       humidity = weatherdata['main']['humidity'];
       pressure = weatherdata['main']['pressure'];
-      wind = weatherdata['wind']['speed'];
+       wind = weatherdata['wind']['speed'];
+      //wind = windr.toDouble;
 
       var visbility_meter = weatherdata['visibility'];
       visbility = visbility_meter/1000 ;
-
       aqi = aqidata['list'][0]['components']['pm2_5'];
       bgPath = weather.getBgPath(weathericon);
       weatherdate = weatherdata['dt'];
-
       // weatherCondition= weather.getWeatherIcon(weathericon);
+
+      // daily weather
+      //day
+       day1 = DateFormat('dd/MM/yyyy').format(DateTime.fromMicrosecondsSinceEpoch( dailyweather['daily'][0]['dt']*1000000)).toString();
+       day2 = DateFormat('dd/MM/yyyy').format(DateTime.fromMicrosecondsSinceEpoch( dailyweather['daily'][1]['dt']*1000000)).toString();
+       day3 = DateFormat('dd/MM/yyyy').format(DateTime.fromMicrosecondsSinceEpoch( dailyweather['daily'][2]['dt']*1000000)).toString();
+       day4 = DateFormat('dd/MM/yyyy').format(DateTime.fromMicrosecondsSinceEpoch( dailyweather['daily'][3]['dt']*1000000)).toString();
+       day5 = DateFormat('dd/MM/yyyy').format(DateTime.fromMicrosecondsSinceEpoch( dailyweather['daily'][4]['dt']*1000000)).toString();
+      //weather icon
+       dWeatherIcon1 = dailyweather['daily'][0]['weather'][0]['icon'].toString();
+       dWeatherIcon2 = dailyweather['daily'][1]['weather'][0]['icon'].toString();
+       dWeatherIcon3 = dailyweather['daily'][2]['weather'][0]['icon'].toString();
+       dWeatherIcon4 = dailyweather['daily'][3]['weather'][0]['icon'].toString();
+       dWeatherIcon5 = dailyweather['daily'][4]['weather'][0]['icon'].toString();
+      //minimum temprature
+      double dMinTemp1r = dailyweather['daily'][0]['temp']['min'];
+      double dMinTemp2r = dailyweather['daily'][1]['temp']['min'];
+      double dMinTemp3r = dailyweather['daily'][2]['temp']['min'];
+      double dMinTemp4r = dailyweather['daily'][3]['temp']['min'];
+      double dMinTemp5r = dailyweather['daily'][4]['temp']['min'];
+      int dMinTemp1i = dMinTemp1r.toInt();
+      int dMinTemp2i = dMinTemp2r.toInt();
+      int dMinTemp3i = dMinTemp3r.toInt();
+      int dMinTemp4i = dMinTemp4r.toInt();
+      int dMinTemp5i = dMinTemp5r.toInt();
+      dMinTemp1 = dMinTemp1i.toString();
+      dMinTemp2 = dMinTemp2i.toString();
+      dMinTemp3 = dMinTemp3i.toString();
+      dMinTemp4 = dMinTemp4i.toString();
+      dMinTemp5 = dMinTemp5i.toString();
+      //maximum temprature
+      double dMaxTemp1r = dailyweather['daily'][0]['temp']['max'];
+      double dMaxTemp2r = dailyweather['daily'][1]['temp']['max'];
+      double dMaxTemp3r = dailyweather['daily'][2]['temp']['max'];
+      double dMaxTemp4r = dailyweather['daily'][3]['temp']['max'];
+      double dMaxTemp5r = dailyweather['daily'][4]['temp']['max'];
+      int dMaxTemp1i = dMaxTemp1r.toInt();
+      int dMaxTemp2i = dMaxTemp2r.toInt();
+      int dMaxTemp3i = dMaxTemp3r.toInt();
+      int dMaxTemp4i = dMaxTemp4r.toInt();
+      int dMaxTemp5i = dMaxTemp5r.toInt();
+      dMaxTemp1 = dMaxTemp1i.toString();
+      dMaxTemp2 = dMaxTemp2i.toString();
+      dMaxTemp3 = dMaxTemp3i.toString();
+      dMaxTemp4 = dMaxTemp4i.toString();
+      dMaxTemp5 = dMaxTemp5i.toString();
+
+
   });
 
   }
@@ -129,7 +218,8 @@ class _LocationScreenState extends State<LocationScreen> {
                 if (SearchCity != null) {
                   var weatherdata = await weather.getCityWeather(SearchCity);
                   var aqidata = await weather.getCityAQI(SearchCity);
-                  updateUI(weatherdata,aqidata);
+                  var dailyweather = await weather.getCityWeatherDaily(SearchCity);
+                  updateUI(weatherdata,aqidata,dailyweather);
                 }
               },
               child: Icon(
@@ -147,7 +237,7 @@ class _LocationScreenState extends State<LocationScreen> {
           ListView(
             children: [
             Container(
-            height: height - (height/9),
+            height: height - (height/6),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,7 +324,7 @@ class _LocationScreenState extends State<LocationScreen> {
                           weatherDetailCard(
                             image: 'images/witness.png',
                             detailName: 'Visibility',
-                            detailInfo: '$visbility Km',
+                            detailInfo: '$visbility km',
                           ),
                         ],)
                     ],
@@ -243,18 +333,48 @@ class _LocationScreenState extends State<LocationScreen> {
               ],
             ),
             ),
-            SizedBox(height: 15,),
+            SizedBox(height: 20,),
             Container(
-            child: Text('Hourly Forcast',style: TextStyle( fontSize: 25),textAlign: TextAlign.center,),
+            child: Text('5 Days Weather',style: TextStyle( fontSize: 25),textAlign: TextAlign.center,),
             ),
-            Container(
-            child: hourlyForecast(
-              temprature: '30',
+            SizedBox(height: 15),
+            dailyForecast(
+              temprature: '$dMinTemp1/$dMaxTemp1°C',
               image:
-                'images/weather_icon/01d.svg',
-              time: '1:00',
+                'images/weather_icon/$dWeatherIcon1.svg',
+              day: '$day1',
             ),
-            ),
+              SizedBox(height: 10),
+              dailyForecast(
+                temprature: '$dMinTemp2/$dMaxTemp2°C',
+                image:
+                'images/weather_icon/$dWeatherIcon2.svg',
+                day: '$day2',
+              ),
+              SizedBox(height: 10),
+              dailyForecast(
+                temprature: '$dMinTemp3/$dMaxTemp3°C',
+                image:
+                'images/weather_icon/$dWeatherIcon3.svg',
+                day: '$day3',
+              ),
+              SizedBox(height: 10),
+              dailyForecast(
+                temprature: '$dMinTemp4/$dMaxTemp4°C',
+                image:
+                'images/weather_icon/$dWeatherIcon4.svg',
+                day: '$day4',
+              ),
+              SizedBox(height: 10),
+              dailyForecast(
+                temprature: '$dMinTemp5/$dMaxTemp5°C',
+                image:
+                'images/weather_icon/$dWeatherIcon5.svg',
+                day: '$day5',
+              ),
+
+
+
 
             ],
             )
@@ -262,6 +382,7 @@ class _LocationScreenState extends State<LocationScreen> {
       )
     );
   }
+
 }
 class weatherDetailCard extends StatelessWidget {
   weatherDetailCard({this.image ,this.detailName , this.detailInfo });
@@ -287,32 +408,36 @@ class weatherDetailCard extends StatelessWidget {
 
           Image(image: AssetImage(image),height: 40,width: 40,),
           Text(detailName,textAlign: TextAlign.center,),
-          Text(detailInfo,textAlign: TextAlign.center,),
+          Text("$detailInfo",textAlign: TextAlign.center,),
         ],
       ) ,
     );
   }
 }
 
-class hourlyForecast extends StatelessWidget {
-  hourlyForecast({this.time ,this.image , this.temprature });
+class dailyForecast extends StatelessWidget {
+  dailyForecast({this.day ,this.image , this.temprature });
   String image;
-  String time;
+  String day;
   String temprature;
   @override
   Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size;
+    var width = screenSize.width;
+    var height = screenSize.height;
+
     return Container(
-      padding: EdgeInsets.all(7),
+      padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
       decoration: BoxDecoration(
-          color: Color(	0xff888888).withOpacity(0.2),
-          borderRadius: BorderRadius.all(Radius.circular(10))
+          color: Color(	0xff888888).withOpacity(0.5),
+          borderRadius: BorderRadius.all(Radius.circular(15))
       ),
-      height: 100,
-      width: 50,
-      child: Column(
+      height: height/13,
+      width: width,
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(time,textAlign: TextAlign.center,),
+          Text(day,textAlign: TextAlign.center,),
           SvgPicture.asset(
             image,
             color: Colors.white,
@@ -324,17 +449,3 @@ class hourlyForecast extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

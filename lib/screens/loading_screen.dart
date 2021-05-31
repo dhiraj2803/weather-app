@@ -21,10 +21,12 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
    var weatherData = await WeatherModel().getLocationWeather();
    var aqiData = await WeatherModel().getLocationAQI();
+   var weatherForecast = await WeatherModel().getLocationWeatherDaily();
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return LocationScreen(
         locationweather: weatherData,
         aqidata: aqiData,
+        dailyweather: weatherForecast,
       );
     }));
     //print(networkHelper.getData());
